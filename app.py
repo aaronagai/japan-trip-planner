@@ -131,7 +131,7 @@ def lounge_url(val):
     return val if val.startswith("http") else ""
 
 # Parse data
-flight_total    = sum(filter(None, [parse_rm(get(r,7)) for r in [4,5,6,7,8]]))
+flight_total    = sum(filter(None, [parse_rm(get(r,7)) for r in [4,5]]))
 accom_total     = sum(filter(None, [parse_rm(get(r,7)) for r in [13,14]]))
 food_total      = sum(filter(None, [parse_rm(get(r,4)) for r in [19,20]]))
 transport_total = sum(filter(None, [parse_rm(get(r,4)) for r in [25,26]]))
@@ -233,16 +233,16 @@ for label, val, total, color in [
 # Tables
 st.markdown("---")
 with st.expander("Flights"):
-    notes = [get(r,8) for r in [4,5,6,7,8]]
+    notes = [get(r,8) for r in [4,5]]
     flights_df = pd.DataFrame({
-        "Date":        [get(r,0) for r in [4,5,6,7,8]],
-        "Destination": [get(r,1) for r in [4,5,6,7,8]],
-        "Departure":   [get(r,2) for r in [4,5,6,7,8]],
-        "Arrival":     [get(r,3) for r in [4,5,6,7,8]],
-        "Airline":     [get(r,4) for r in [4,5,6,7,8]],
-        "Flight No.":  [get(r,5) for r in [4,5,6,7,8]],
-        "Dep / Arr":   [get(r,6) for r in [4,5,6,7,8]],
-        "Cost":        [get(r,7) for r in [4,5,6,7,8]],
+        "Date":        [get(r,0) for r in [4,5]],
+        "Destination": [get(r,1) for r in [4,5]],
+        "Departure":   [get(r,2) for r in [4,5]],
+        "Arrival":     [get(r,3) for r in [4,5]],
+        "Airline":     [get(r,4) for r in [4,5]],
+        "Flight No.":  [get(r,5) for r in [4,5]],
+        "Dep / Arr":   [get(r,6) for r in [4,5]],
+        "Cost":        [get(r,7) for r in [4,5]],
         "Lounge":      [lounge_url(n) for n in notes],
     })
     st.dataframe(flights_df, hide_index=True, use_container_width=True, column_config={
