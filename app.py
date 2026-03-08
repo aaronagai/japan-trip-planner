@@ -170,7 +170,7 @@ ch1, ch2 = st.columns([1, 1])
 
 categories = ["Flights", "Accommodation", "Food", "Transport", "Utilities"]
 values = [flight_total, accom_total, food_total, transport_total, act_total]
-colors = ["#ff6b6b", "#ffa94d", "#ffd43b", "#69db7c", "#74c0fc"]
+colors = ["#7c6aff", "#3b82f6", "#22c55e", "#f59e0b", "#ec4899"]
 
 with ch1:
     fig_donut = go.Figure(go.Pie(
@@ -198,8 +198,8 @@ with ch2:
     andrea_contrib = andrea or 0
     mummy_contrib  = mummy or 0
     fig_contrib = go.Figure(data=[
-        go.Bar(name="Andrea", y=["Contribution"], x=[andrea_contrib], orientation="h", marker_color="#ff6b6b", width=0.3),
-        go.Bar(name="Mummy",  y=["Contribution"], x=[mummy_contrib],  orientation="h", marker_color="#74c0fc", width=0.3),
+        go.Bar(name="Andrea", y=["Contribution"], x=[andrea_contrib], orientation="h", marker_color="#7c6aff", width=0.3),
+        go.Bar(name="Mummy",  y=["Contribution"], x=[mummy_contrib],  orientation="h", marker_color="#ec4899", width=0.3),
     ])
     fig_contrib.update_layout(
         paper_bgcolor="#111111", plot_bgcolor="#111111",
@@ -216,11 +216,11 @@ with ch2:
 # Progress bars
 st.markdown('<div class="section-header">Budget vs Estimate</div>', unsafe_allow_html=True)
 for label, val, total, color in [
-    ("Flights",       flight_total,    grand_total, "#ff6b6b"),
-    ("Accommodation", accom_total,     grand_total, "#ffa94d"),
-    ("Food",          food_total,      grand_total, "#ffd43b"),
-    ("Transport",     transport_total, grand_total, "#69db7c"),
-    ("Utilities",     act_total,       grand_total, "#74c0fc"),
+    ("Flights",       flight_total,    grand_total, "#7c6aff"),
+    ("Accommodation", accom_total,     grand_total, "#3b82f6"),
+    ("Food",          food_total,      grand_total, "#22c55e"),
+    ("Transport",     transport_total, grand_total, "#f59e0b"),
+    ("Utilities",     act_total,       grand_total, "#ec4899"),
 ]:
     p = round((val / total) * 100) if total else 0
     st.markdown(f"""
