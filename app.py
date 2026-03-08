@@ -152,31 +152,17 @@ kpi_items = [
     ("Food",          rm(food_total),   "All cities"),
     ("Transport",     rm(transport_total), "All cities"),
 ]
-r1 = st.columns(2)
-for i in range(2):
-    label, val, sub = kpi_items[i]
-    with r1[i]:
-        st.markdown(f"""
-        <div class="card-sm">
-            <div class="label">{label}</div>
-            <div class="big-num">{val}</div>
-            <div class="sub">{sub}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-st.markdown('<div style="height: 12px"></div>', unsafe_allow_html=True)
-
-r2 = st.columns(3)
-for i in range(3):
-    label, val, sub = kpi_items[i + 2]
-    with r2[i]:
-        st.markdown(f"""
-        <div class="card-sm">
-            <div class="label">{label}</div>
-            <div class="big-num">{val}</div>
-            <div class="sub">{sub}</div>
-        </div>
-        """, unsafe_allow_html=True)
+kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radius:10px;display:flex;overflow:hidden;margin-bottom:16px;">'
+for i, (label, val, sub) in enumerate(kpi_items):
+    border = "border-left:1px solid #1f1f1f;" if i > 0 else ""
+    kpi_html += f"""
+    <div style="flex:1;padding:20px 24px;{border}">
+        <div class="label">{label}</div>
+        <div class="big-num">{val}</div>
+        <div class="sub">{sub}</div>
+    </div>"""
+kpi_html += '</div>'
+st.markdown(kpi_html, unsafe_allow_html=True)
 
 # Charts
 st.markdown('<div class="section-header">Breakdown</div>', unsafe_allow_html=True)
