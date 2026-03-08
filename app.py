@@ -170,7 +170,7 @@ ch1, ch2 = st.columns([1, 1])
 
 categories = ["Flights", "Accommodation", "Food", "Transport", "Utilities"]
 values = [flight_total, accom_total, food_total, transport_total, act_total]
-colors = ["#7c6aff", "#3b82f6", "#22c55e", "#f59e0b", "#ec4899"]
+colors = ["#ec4899", "#3b82f6", "#22c55e", "#f59e0b", "#7c6aff"]
 
 with ch1:
     fig_donut = go.Figure(go.Pie(
@@ -216,11 +216,11 @@ with ch2:
 # Progress bars
 st.markdown('<div class="section-header">Budget vs Estimate</div>', unsafe_allow_html=True)
 for label, val, total, color in [
-    ("Flights",       flight_total,    grand_total, "#7c6aff"),
+    ("Flights",       flight_total,    grand_total, "#ec4899"),
     ("Accommodation", accom_total,     grand_total, "#3b82f6"),
     ("Food",          food_total,      grand_total, "#22c55e"),
     ("Transport",     transport_total, grand_total, "#f59e0b"),
-    ("Utilities",     act_total,       grand_total, "#ec4899"),
+    ("Utilities",     act_total,       grand_total, "#7c6aff"),
 ]:
     p = round((val / total) * 100) if total else 0
     st.markdown(f"""
