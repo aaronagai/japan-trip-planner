@@ -156,12 +156,10 @@ kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radiu
 for i, (label, val, sub) in enumerate(kpi_items):
     border = "border-top:1px solid #1f1f1f;" if i > 0 else ""
     kpi_html += f"""
-    <div style="padding:16px 24px;{border}display:flex;justify-content:space-between;align-items:center;">
-        <div class="label" style="margin-bottom:0">{label}</div>
-        <div>
-            <div class="big-num-sm" style="text-align:right">{val}</div>
-            <div class="sub" style="text-align:right">{sub}</div>
-        </div>
+    <div style="padding:16px 24px;{border}">
+        <div class="label">{label}</div>
+        <div class="big-num-sm">{val}</div>
+        <div class="sub">{sub}</div>
     </div>"""
 kpi_html += '</div>'
 st.markdown(kpi_html, unsafe_allow_html=True)
