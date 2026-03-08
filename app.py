@@ -158,7 +158,7 @@ for i, (label, val, sub) in enumerate(kpi_items):
     kpi_html += f"""
     <div style="padding:16px 24px;{border}">
         <div class="label">{label}</div>
-        <div class="big-num-sm">{val}</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;margin:2px 0;">{val}</div>
         <div class="sub">{sub}</div>
     </div>"""
 kpi_html += '</div>'
