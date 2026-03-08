@@ -152,10 +152,24 @@ kpi_items = [
     ("Food",          rm(food_total),   "All cities"),
     ("Transport",     rm(transport_total), "All cities"),
 ]
-r1, r2 = st.columns(2), st.columns(3)
-for i, (label, val, sub) in enumerate(kpi_items):
-    col = r1[i] if i < 2 else r2[i - 2]
-    with col:
+r1 = st.columns(2)
+for i in range(2):
+    label, val, sub = kpi_items[i]
+    with r1[i]:
+        st.markdown(f"""
+        <div class="card-sm">
+            <div class="label">{label}</div>
+            <div class="big-num">{val}</div>
+            <div class="sub">{sub}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+st.markdown('<div style="height: 12px"></div>', unsafe_allow_html=True)
+
+r2 = st.columns(3)
+for i in range(3):
+    label, val, sub = kpi_items[i + 2]
+    with r2[i]:
         st.markdown(f"""
         <div class="card-sm">
             <div class="label">{label}</div>
