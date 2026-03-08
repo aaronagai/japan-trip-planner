@@ -102,9 +102,9 @@ div[data-testid="stSidebar"] { background: #0d0d0d; border-right: 1px solid #1a1
 # ── Sidebar ──────────────────────────────────────────────────
 auto_refresh = st.sidebar.checkbox("Auto-refresh (every 3s)", value=True)
 st.sidebar.markdown("---")
-st.sidebar.markdown('<div class="label">Trip</div><div style="color:#fff;font-size:14px;font-weight:600;">Japan</div>', unsafe_allow_html=True)
-st.sidebar.markdown('<div class="label" style="margin-top:12px">Duration</div><div style="color:#fff;font-size:14px;">TBD</div>', unsafe_allow_html=True)
-st.sidebar.markdown('<div class="label" style="margin-top:12px">Pax</div><div style="color:#fff;font-size:14px;">TBD & TBD</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="label">Trip</div><div style="color:#fff;font-size:14px;font-weight:600;">Osaka, Japan</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="label" style="margin-top:12px">Duration</div><div style="color:#fff;font-size:14px;">5 Oct – 11 Oct 2026</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="label" style="margin-top:12px">Pax</div><div style="color:#fff;font-size:14px;">Andrea & Mummy</div>', unsafe_allow_html=True)
 
 def parse_rm(val):
     if pd.isna(val): return None
@@ -137,20 +137,20 @@ food_total      = sum(filter(None, [parse_rm(get(r,4)) for r in [19,20]]))
 transport_total = sum(filter(None, [parse_rm(get(r,4)) for r in [25,26]]))
 act_total       = sum(filter(None, [parse_rm(get(r,2)) for r in [32,33,34]]))
 grand_total     = flight_total + accom_total + food_total + transport_total + act_total
-t1              = parse_rm(get(39,1))
-t2              = parse_rm(get(40,1))
+andrea = parse_rm(get(39,1))
+mummy  = parse_rm(get(40,1))
 
 # Page title
 st.markdown('<div class="page-title">Japan Trip Dashboard</div>', unsafe_allow_html=True)
-st.markdown('<div class="page-sub">Japan · TBD · Two Pax</div>', unsafe_allow_html=True)
+st.markdown('<div class="page-sub">Osaka · 5 Oct – 11 Oct 2026 · Two Pax</div>', unsafe_allow_html=True)
 
 # KPI row
 kpi_items = [
     ("Grand Total",   rm(grand_total),  "All expenses"),
-    ("Flights",       rm(flight_total), "5 segments"),
-    ("Accommodation", rm(accom_total),  "TBD nights"),
-    ("Food",          rm(food_total),   "All cities"),
-    ("Transport",     rm(transport_total), "All cities"),
+    ("Flights",       rm(flight_total), "2 segments"),
+    ("Accommodation", rm(accom_total),  "6 nights"),
+    ("Food",          rm(food_total),   "Osaka"),
+    ("Transport",     rm(transport_total), "Osaka & Kyoto"),
 ]
 kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radius:10px;overflow:hidden;margin-bottom:16px;">'
 for i, (label, val, sub) in enumerate(kpi_items):
@@ -195,11 +195,11 @@ with ch1:
     st.plotly_chart(fig_donut, use_container_width=True, config={"displayModeBar": False})
 
 with ch2:
-    t1_contrib = t1 or 0
-    t2_contrib = t2 or 0
+    andrea_contrib = andrea or 0
+    mummy_contrib  = mummy or 0
     fig_contrib = go.Figure(data=[
-        go.Bar(name="Traveller 1", y=["Contribution"], x=[t1_contrib], orientation="h", marker_color="#ff6b6b", width=0.3),
-        go.Bar(name="Traveller 2", y=["Contribution"], x=[t2_contrib], orientation="h", marker_color="#74c0fc", width=0.3),
+        go.Bar(name="Andrea", y=["Contribution"], x=[andrea_contrib], orientation="h", marker_color="#ff6b6b", width=0.3),
+        go.Bar(name="Mummy",  y=["Contribution"], x=[mummy_contrib],  orientation="h", marker_color="#74c0fc", width=0.3),
     ])
     fig_contrib.update_layout(
         paper_bgcolor="#111111", plot_bgcolor="#111111",
