@@ -261,27 +261,24 @@ with st.expander("Accommodation"):
         "Total":         [get(r,7) for r in [13,14]],
     })
 
-tl, tr = st.columns(2)
-with tl:
-    with st.expander("Food"):
-        show({
-            "Dates":          [get(r,0) for r in [19,20]],
-            "City":           [get(r,1) for r in [19,20]],
-            "Days":           [get(r,2) for r in [19,20]],
-            "Daily Estimate": [get(r,3) for r in [19,20]],
-            "Total":          [get(r,4) for r in [19,20]],
-        })
+with st.expander("Food"):
+    show({
+        "Dates":          [get(r,0) for r in [19,20]],
+        "City":           [get(r,1) for r in [19,20]],
+        "Days":           [get(r,2) for r in [19,20]],
+        "Daily Estimate": [get(r,3) for r in [19,20]],
+        "Total":          [get(r,4) for r in [19,20]],
+    })
 
-with tr:
-    with st.expander("Transportation"):
-        show({
-            "Dates":          [get(r,0) for r in [25,26]],
-            "City":           [get(r,1) for r in [25,26]],
-            "Days":           [get(r,2) for r in [25,26]],
-            "Daily Estimate": [get(r,3) for r in [25,26]],
-            "Total":          [get(r,4) for r in [25,26]],
-            "Notes":          [get(r,5) for r in [25,26]],
-        })
+with st.expander("Transportation"):
+    show({
+        "Dates":          [get(r,0) for r in [25,26]],
+        "City":           [get(r,1) for r in [25,26]],
+        "Days":           [get(r,2) for r in [25,26]],
+        "Daily Estimate": [get(r,3) for r in [25,26]],
+        "Total":          [get(r,4) for r in [25,26]],
+        "Notes":          [get(r,5) for r in [25,26]],
+    })
 
 with st.expander("Utilities & Others"):
     show({
