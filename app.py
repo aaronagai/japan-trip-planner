@@ -152,14 +152,16 @@ kpi_items = [
     ("Food",          rm(food_total),   "All cities"),
     ("Transport",     rm(transport_total), "All cities"),
 ]
-kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radius:10px;display:flex;overflow:hidden;margin-bottom:16px;">'
+kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radius:10px;overflow:hidden;margin-bottom:16px;">'
 for i, (label, val, sub) in enumerate(kpi_items):
-    border = "border-left:1px solid #1f1f1f;" if i > 0 else ""
+    border = "border-top:1px solid #1f1f1f;" if i > 0 else ""
     kpi_html += f"""
-    <div style="flex:1;padding:20px 24px;{border}">
-        <div class="label">{label}</div>
-        <div class="big-num">{val}</div>
-        <div class="sub">{sub}</div>
+    <div style="padding:16px 24px;{border}display:flex;justify-content:space-between;align-items:center;">
+        <div class="label" style="margin-bottom:0">{label}</div>
+        <div>
+            <div class="big-num-sm" style="text-align:right">{val}</div>
+            <div class="sub" style="text-align:right">{sub}</div>
+        </div>
     </div>"""
 kpi_html += '</div>'
 st.markdown(kpi_html, unsafe_allow_html=True)
