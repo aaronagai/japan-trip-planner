@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import time
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 CSV_PATH = "Japan_Trip.csv"
 
@@ -260,48 +260,40 @@ st.markdown('<div class="section-header">Calendar View</div>', unsafe_allow_html
 
 cal_mode = st.radio("", ["Travel", "Office Leave"], horizontal=True, label_visibility="collapsed")
 
-def parse_day(s):
-    try: return int(str(s).strip().split()[0])
-    except: return None
+cal_start = date(2026, 9, 28)   # Monday — week before trip
+cal_end   = date(2026, 10, 18)  # Sunday — week after trip
 
-stay_map = {}
-for r, color in [(13, "#ec4899")]:
-    city = get(r, 1)
-    cin  = parse_day(get(r, 3))
-    cout = parse_day(get(r, 4))
-    if city and cin and cout:
-        for d in range(cin, cout):
-            stay_map[d] = (city, color)
+flight_dates = {date(2026, 10, 5), date(2026, 10, 11)}
+osaka_dates  = {date(2026, 10, d) for d in range(5, 11)}  # Oct 5–10 (checkout Oct 11)
+leave_dates  = {date(2026, 10, d) for d in range(5, 10)}  # Mon–Fri office leave
 
-flight_map = {}
-for r in [4, 5]:
-    d     = parse_day(get(r, 0))
-    route = get(r, 1).replace("\n", " ")
-    fno   = get(r, 5)
-    if d and 5 <= d <= 11:
-        flight_map[d] = (route, fno)
-
-base_dow = datetime(2026, 10, 5).weekday()
 cells_html = ""
-for _ in range(base_dow):
-    cells_html += '<div></div>'
+cur = cal_start
+while cur <= cal_end:
+    month_tag = "" if cur.month == 10 else f"<div style='font-size:8px;color:#3a3a3a;line-height:1;margin-bottom:2px;'>SEP</div>"
+    day_label = f"<div style='font-size:10px;color:#555;'>{cur.day}</div>"
 
-if cal_mode == "Travel":
-    for day in range(5, 12):
-        if day in flight_map:
+    if cal_mode == "Travel":
+        if cur in flight_dates:
             bg, border = "#2a1f4a", "#7c6aff"
-        elif day in stay_map:
-            city, color = stay_map[day]
-            bg     = "#2a0d1a"
-            border = color
+        elif cur in osaka_dates:
+            bg, border = "#2a0d1a", "#ec4899"
         else:
             bg, border = "#111111", "#1f1f1f"
-        cells_html += (
-            "<div style='background:" + bg + ";border:1px solid " + border + ";border-radius:6px;"
-            "padding:10px 8px;min-height:56px;display:flex;align-items:flex-end;'>"
-            "<div style='font-size:10px;color:#555;'>" + str(day) + "</div>"
-            "</div>"
-        )
+    else:
+        if cur in leave_dates:
+            bg, border = "#2a1500", "#f59e0b"
+        else:
+            bg, border = "#111111", "#1f1f1f"
+
+    cells_html += (
+        "<div style='background:" + bg + ";border:1px solid " + border + ";border-radius:6px;"
+        "padding:10px 8px;min-height:56px;display:flex;flex-direction:column;justify-content:space-between;'>"
+        + month_tag + day_label + "</div>"
+    )
+    cur += timedelta(days=1)
+
+if cal_mode == "Travel":
     legend_html = """
 <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
     <div style="display:flex;align-items:center;gap:6px;">
@@ -318,24 +310,6 @@ if cal_mode == "Travel":
     </div>
 </div>"""
 else:
-    leave_map = {
-        5:  ("#2a1500", "#f59e0b"),
-        6:  ("#2a1500", "#f59e0b"),
-        7:  ("#2a1500", "#f59e0b"),
-        8:  ("#2a1500", "#f59e0b"),
-        9:  ("#2a1500", "#f59e0b"),
-    }
-    for day in range(5, 12):
-        if day in leave_map:
-            bg, border = leave_map[day]
-        else:
-            bg, border = "#111111", "#1f1f1f"
-        cells_html += (
-            "<div style='background:" + bg + ";border:1px solid " + border + ";border-radius:6px;"
-            "padding:10px 8px;min-height:56px;display:flex;align-items:flex-end;'>"
-            "<div style='font-size:10px;color:#555;'>" + str(day) + "</div>"
-            "</div>"
-        )
     legend_html = """
 <div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
     <div style="display:flex;align-items:center;gap:6px;">
@@ -360,7 +334,7 @@ cal_full = (
     + headers_html + cells_html +
     "</div>" + legend_html + "</div>"
 )
-components.html(cal_full, height=230)
+components.html(cal_full, height=380)
 
 # Tables
 st.markdown('<hr style="border:none;border-top:1px solid #1a1a1a;margin:12px 0;">', unsafe_allow_html=True)
