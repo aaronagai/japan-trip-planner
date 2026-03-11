@@ -265,7 +265,8 @@ cal_end   = date(2026, 10, 18)  # Sunday — week after trip
 
 flight_dates = {date(2026, 10, 5), date(2026, 10, 11)}
 osaka_dates  = {date(2026, 10, d) for d in range(5, 11)}  # Oct 5–10 (checkout Oct 11)
-leave_dates  = {date(2026, 10, d) for d in range(5, 10)}  # Mon–Fri office leave
+leave_dates   = {date(2026, 10, d) for d in range(5, 10)}   # Mon–Fri office leave
+weekend_dates = {date(2026, 10, d) for d in [3, 4, 10, 11]}  # weekends
 
 cells_html = ""
 cur = cal_start
@@ -283,6 +284,8 @@ while cur <= cal_end:
     else:
         if cur in leave_dates:
             bg, border = "#2a1500", "#f59e0b"
+        elif cur in weekend_dates:
+            bg, border = "#0d2010", "#22c55e"
         else:
             bg, border = "#111111", "#1f1f1f"
 
@@ -315,6 +318,10 @@ else:
     <div style="display:flex;align-items:center;gap:6px;">
         <div style="width:12px;height:12px;border-radius:3px;background:#2a1500;border:1px solid #f59e0b;"></div>
         <span style="font-size:13px;color:#888;">Office Leave</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#0d2010;border:1px solid #22c55e;"></div>
+        <span style="font-size:13px;color:#888;">Weekend</span>
     </div>
     <div style="display:flex;align-items:center;gap:6px;">
         <div style="width:12px;height:12px;border-radius:3px;background:#111111;border:1px solid #1f1f1f;"></div>
