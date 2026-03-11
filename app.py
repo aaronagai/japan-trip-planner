@@ -121,7 +121,6 @@ div[data-testid="stSidebar"] { background: #0d0d0d; border-right: 1px solid #1a1
 """, unsafe_allow_html=True)
 
 # ── Load data from CSV ──────────────────────────────────────────
-@st.cache_data
 def load_from_csv():
     raw = pd.read_csv(CSV_PATH, header=None)
 
