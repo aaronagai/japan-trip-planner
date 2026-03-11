@@ -7,7 +7,7 @@ from datetime import datetime, date, timedelta
 
 CSV_PATH = "Japan_Trip.csv"
 
-st.set_page_config(page_title="Japan Trip Planner", layout="wide", page_icon="🇯🇵")
+st.set_page_config(page_title="🇯🇵 Japan · Oct 2026", layout="wide", page_icon="🇯🇵")
 
 import streamlit.components.v1 as components
 
