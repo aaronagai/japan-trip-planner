@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 import time
+from datetime import datetime
 
 CSV_PATH = "Japan_Trip.csv"
 
@@ -82,6 +84,21 @@ st.markdown("""
 }
 
 #MainMenu, footer, header { visibility: hidden; }
+
+/* Badge */
+.badge {
+    display: inline-block;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Calendar toggle */
+div[data-testid="stRadio"] label p { font-size: 11px !important; }
 
 div[data-testid="stExpander"] { border: none !important; box-shadow: none !important; }
 details { border: none !important; box-shadow: none !important; }
@@ -212,6 +229,14 @@ with ch2:
         legend=dict(font=dict(color="#888", size=12), bgcolor="rgba(0,0,0,0)"),
     )
     st.plotly_chart(fig_contrib, use_container_width=True, config={"displayModeBar": False})
+    components.html("""
+    <script>
+    setTimeout(() => {
+        const plots = window.parent.document.querySelectorAll('.js-plotly-plot');
+        plots.forEach(p => { try { Plotly.animate(p, null); } catch(e) {} });
+    }, 500);
+    </script>
+    """, height=0)
 
 # Progress bars
 st.markdown('<div class="section-header">Budget vs Estimate</div>', unsafe_allow_html=True)
@@ -230,8 +255,115 @@ for label, val, total, color in [
     </div>
     """, unsafe_allow_html=True)
 
+# Calendar View
+st.markdown('<div class="section-header">Calendar View</div>', unsafe_allow_html=True)
+
+cal_mode = st.radio("", ["Travel", "Office Leave"], horizontal=True, label_visibility="collapsed")
+
+def parse_day(s):
+    try: return int(str(s).strip().split()[0])
+    except: return None
+
+stay_map = {}
+for r, color in [(13, "#ec4899")]:
+    city = get(r, 1)
+    cin  = parse_day(get(r, 3))
+    cout = parse_day(get(r, 4))
+    if city and cin and cout:
+        for d in range(cin, cout):
+            stay_map[d] = (city, color)
+
+flight_map = {}
+for r in [4, 5]:
+    d     = parse_day(get(r, 0))
+    route = get(r, 1).replace("\n", " ")
+    fno   = get(r, 5)
+    if d and 5 <= d <= 11:
+        flight_map[d] = (route, fno)
+
+base_dow = datetime(2026, 10, 5).weekday()
+cells_html = ""
+for _ in range(base_dow):
+    cells_html += '<div></div>'
+
+if cal_mode == "Travel":
+    for day in range(5, 12):
+        if day in flight_map:
+            bg, border = "#2a1f4a", "#7c6aff"
+        elif day in stay_map:
+            city, color = stay_map[day]
+            bg     = "#2a0d1a"
+            border = color
+        else:
+            bg, border = "#111111", "#1f1f1f"
+        cells_html += (
+            "<div style='background:" + bg + ";border:1px solid " + border + ";border-radius:6px;"
+            "padding:10px 8px;min-height:56px;display:flex;align-items:flex-end;'>"
+            "<div style='font-size:10px;color:#555;'>" + str(day) + "</div>"
+            "</div>"
+        )
+    legend_html = """
+<div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#2a1f4a;border:1px solid #7c6aff;"></div>
+        <span style="font-size:13px;color:#888;">Flight day</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#2a0d1a;border:1px solid #ec4899;"></div>
+        <span style="font-size:13px;color:#888;">Osaka</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#111111;border:1px solid #1f1f1f;"></div>
+        <span style="font-size:13px;color:#888;">No event</span>
+    </div>
+</div>"""
+else:
+    leave_map = {
+        5:  ("#2a1500", "#f59e0b"),
+        6:  ("#2a1500", "#f59e0b"),
+        7:  ("#2a1500", "#f59e0b"),
+        8:  ("#2a1500", "#f59e0b"),
+        9:  ("#2a1500", "#f59e0b"),
+    }
+    for day in range(5, 12):
+        if day in leave_map:
+            bg, border = leave_map[day]
+        else:
+            bg, border = "#111111", "#1f1f1f"
+        cells_html += (
+            "<div style='background:" + bg + ";border:1px solid " + border + ";border-radius:6px;"
+            "padding:10px 8px;min-height:56px;display:flex;align-items:flex-end;'>"
+            "<div style='font-size:10px;color:#555;'>" + str(day) + "</div>"
+            "</div>"
+        )
+    legend_html = """
+<div style="display:flex;gap:16px;margin-top:20px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#2a1500;border:1px solid #f59e0b;"></div>
+        <span style="font-size:13px;color:#888;">Office Leave</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:#111111;border:1px solid #1f1f1f;"></div>
+        <span style="font-size:13px;color:#888;">No event</span>
+    </div>
+</div>"""
+
+headers_html = "".join(
+    "<div style='text-align:center;font-size:10px;color:#444;padding:3px 0;'>" + h + "</div>"
+    for h in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+)
+
+cal_full = (
+    "<link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap' rel='stylesheet'>"
+    "<div style='font-family:Inter,sans-serif;background:#111111;border:1px solid #1f1f1f;border-radius:8px;padding:16px;'>"
+    "<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:8px;'>"
+    + headers_html + cells_html +
+    "</div>" + legend_html + "</div>"
+)
+components.html(cal_full, height=230)
+
 # Tables
-st.markdown("---")
+st.markdown('<hr style="border:none;border-top:1px solid #1a1a1a;margin:12px 0;">', unsafe_allow_html=True)
 with st.expander("Flights"):
     notes = [get(r,8) for r in [4,5]]
     flights_df = pd.DataFrame({
