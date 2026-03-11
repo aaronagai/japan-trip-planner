@@ -49,6 +49,11 @@ st.markdown("""
     color: #fff;
     line-height: 1.1;
 }
+.big-num-sm {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
 
 .sub { font-size: 12px; color: #555; margin-top: 2px; }
 
@@ -71,6 +76,17 @@ st.markdown("""
     border-bottom: 1px solid #1a1a1a;
 }
 
+.badge {
+    display: inline-block;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
 .progress-wrap { margin: 8px 0; }
 .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px; }
 .progress-track { background: #1a1a1a; border-radius: 3px; height: 4px; width: 100%; }
@@ -84,18 +100,6 @@ st.markdown("""
 }
 
 #MainMenu, footer, header { visibility: hidden; }
-
-/* Badge */
-.badge {
-    display: inline-block;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    color: #888;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 500;
-}
 
 /* Calendar toggle */
 div[data-testid="stRadio"] label p { font-size: 11px !important; }
@@ -116,58 +120,115 @@ div[data-testid="stSidebar"] { background: #0d0d0d; border-right: 1px solid #1a1
 </style>
 """, unsafe_allow_html=True)
 
+# ── Load data from CSV ──────────────────────────────────────────
+@st.cache_data
+def load_from_csv():
+    raw = pd.read_csv(CSV_PATH, header=None)
+
+    def get(r, c):
+        try:
+            v = raw.iloc[r, c]
+            return "" if pd.isna(v) else str(v).strip().replace("\r\n", " ").replace("\n", " ")
+        except: return ""
+
+    def get_rm(r, c):
+        val = get(r, c).replace("RM", "").replace(",", "").strip()
+        try: return float(val)
+        except: return 0.0
+
+    flights = pd.DataFrame({
+        "Date":        [get(r, 0) for r in [4, 5]],
+        "Destination": [get(r, 1) for r in [4, 5]],
+        "Departure":   [get(r, 2) for r in [4, 5]],
+        "Arrival":     [get(r, 3) for r in [4, 5]],
+        "Airline":     [get(r, 4) for r in [4, 5]],
+        "Flight No.":  [get(r, 5) for r in [4, 5]],
+        "Dep / Arr":   [get(r, 6) for r in [4, 5]],
+        "Cost (RM)":   [get_rm(r, 7) for r in [4, 5]],
+        "Lounge":      [get(r, 8) if get(r, 8).startswith("http") else "" for r in [4, 5]],
+    })
+
+    accom = pd.DataFrame({
+        "Date":          [get(13, 0)],
+        "City":          [get(13, 1)],
+        "Accommodation": [get(13, 2)],
+        "Check In":      [get(13, 3)],
+        "Check Out":     [get(13, 4)],
+        "Total (RM)":    [get_rm(13, 7)],
+    })
+
+    food = pd.DataFrame({
+        "Dates":      [get(19, 0)],
+        "City":       [get(19, 1)],
+        "Total (RM)": [get_rm(19, 4)],
+    })
+
+    transport = pd.DataFrame({
+        "Dates":      [get(r, 0) for r in [25, 26]],
+        "City":       [get(r, 1) for r in [25, 26]],
+        "Notes":      [get(r, 5) for r in [25, 26]],
+        "Total (RM)": [get_rm(r, 4) for r in [25, 26]],
+    })
+
+    utilities = pd.DataFrame({
+        "Item":      [get(r, 1) for r in [32, 33, 34]],
+        "Cost (RM)": [get_rm(r, 2) for r in [32, 33, 34]],
+    })
+
+    andrea = get_rm(39, 1)
+    mummy  = get_rm(40, 1)
+
+    return flights, accom, food, transport, utilities, andrea, mummy
+
+# ── Session state init ──────────────────────────────────────────
+if "flights" not in st.session_state:
+    f, a, fd, tr, ut, andrea_v, mummy_v = load_from_csv()
+    st.session_state.flights   = f
+    st.session_state.accom     = a
+    st.session_state.food      = fd
+    st.session_state.transport = tr
+    st.session_state.utilities = ut
+    st.session_state.andrea    = andrea_v
+    st.session_state.mummy     = mummy_v
+
 # ── Sidebar ──────────────────────────────────────────────────
 auto_refresh = st.sidebar.checkbox("Auto-refresh (every 3s)", value=True)
 st.sidebar.markdown("---")
 st.sidebar.markdown('<div class="label">Trip</div><div style="color:#fff;font-size:14px;font-weight:600;">Osaka, Japan</div>', unsafe_allow_html=True)
 st.sidebar.markdown('<div class="label" style="margin-top:12px">Duration</div><div style="color:#fff;font-size:14px;">5 Oct – 11 Oct 2026</div>', unsafe_allow_html=True)
 st.sidebar.markdown('<div class="label" style="margin-top:12px">Pax</div><div style="color:#fff;font-size:14px;">Andrea & Mummy</div>', unsafe_allow_html=True)
-
-def parse_rm(val):
-    if pd.isna(val): return None
-    val = str(val).replace("RM", "").replace(",", "").strip()
-    try: return float(val)
-    except: return None
+st.sidebar.markdown("---")
+if st.sidebar.button("↺ Reset to original"):
+    for key in ["flights", "accom", "food", "transport", "utilities", "andrea", "mummy"]:
+        st.session_state.pop(key, None)
+    st.rerun()
 
 def rm(val, decimals=0):
     if val is None: return "—"
     return f"RM {val:,.{decimals}f}"
 
-def show(data):
-    st.dataframe(pd.DataFrame(data), hide_index=True, use_container_width=True)
-
-df = pd.read_csv(CSV_PATH, header=None)
-
-def get(r, c):
-    try:
-        v = df.iloc[r, c]
-        return "" if pd.isna(v) else str(v).strip().replace("\r\n", "\n")
-    except: return ""
-
-def lounge_url(val):
-    return val if val.startswith("http") else ""
-
-# Parse data
-flight_total    = sum(filter(None, [parse_rm(get(r,7)) for r in [4,5]]))
-accom_total     = sum(filter(None, [parse_rm(get(r,7)) for r in [13,14]]))
-food_total      = sum(filter(None, [parse_rm(get(r,4)) for r in [19,20]]))
-transport_total = sum(filter(None, [parse_rm(get(r,4)) for r in [25,26]]))
-act_total       = sum(filter(None, [parse_rm(get(r,2)) for r in [32,33,34]]))
+# ── Compute totals from session state ──────────────────────────
+flight_total    = st.session_state.flights["Cost (RM)"].sum()
+accom_total     = st.session_state.accom["Total (RM)"].sum()
+food_total      = st.session_state.food["Total (RM)"].sum()
+transport_total = st.session_state.transport["Total (RM)"].sum()
+act_total       = st.session_state.utilities["Cost (RM)"].sum()
 grand_total     = flight_total + accom_total + food_total + transport_total + act_total
-andrea = parse_rm(get(39,1))
-mummy  = parse_rm(get(40,1))
+andrea          = st.session_state.andrea
+mummy           = st.session_state.mummy
 
-# Page title
+# ── Page title ──────────────────────────────────────────────────
 st.markdown('<div class="page-title">Japan Trip Dashboard</div>', unsafe_allow_html=True)
 st.markdown('<div class="page-sub">Osaka · 5 Oct – 11 Oct 2026 · Two Pax</div>', unsafe_allow_html=True)
 
-# KPI row
+# ── KPI row ──────────────────────────────────────────────────────
 kpi_items = [
-    ("Grand Total",   rm(grand_total),  "All expenses"),
-    ("Flights",       rm(flight_total), "2 segments"),
-    ("Accommodation", rm(accom_total),  "6 nights"),
-    ("Food",          rm(food_total),   "Osaka"),
-    ("Transport",     rm(transport_total), "Osaka & Kyoto"),
+    ("Grand Total",   rm(grand_total),      "All expenses"),
+    ("Flights",       rm(flight_total),     "2 segments"),
+    ("Accommodation", rm(accom_total),      "6 nights"),
+    ("Food",          rm(food_total),       "Osaka"),
+    ("Transport",     rm(transport_total),  "Osaka & Kyoto"),
+    ("Utilities",     rm(act_total),        "Visa, roaming, insurance"),
 ]
 kpi_html = '<div style="background:#111111;border:1px solid #1f1f1f;border-radius:10px;overflow:hidden;margin-bottom:16px;">'
 for i, (label, val, sub) in enumerate(kpi_items):
@@ -181,7 +242,7 @@ for i, (label, val, sub) in enumerate(kpi_items):
 kpi_html += '</div>'
 st.markdown(kpi_html, unsafe_allow_html=True)
 
-# Charts
+# ── Charts ──────────────────────────────────────────────────────
 st.markdown('<div class="section-header">Breakdown</div>', unsafe_allow_html=True)
 ch1, ch2 = st.columns([1, 1])
 
@@ -192,7 +253,7 @@ colors = ["#ec4899", "#3b82f6", "#22c55e", "#f59e0b", "#7c6aff"]
 with ch1:
     fig_donut = go.Figure(go.Pie(
         labels=categories,
-        values=values if any(v > 0 for v in values) else [1,1,1,1,1],
+        values=values if any(v > 0 for v in values) else [1, 1, 1, 1, 1],
         hole=0.65,
         marker=dict(colors=colors, line=dict(color="#090909", width=2)),
         textinfo="none",
@@ -238,7 +299,7 @@ with ch2:
     </script>
     """, height=0)
 
-# Progress bars
+# ── Progress bars ──────────────────────────────────────────────
 st.markdown('<div class="section-header">Budget vs Estimate</div>', unsafe_allow_html=True)
 for label, val, total, color in [
     ("Flights",       flight_total,    grand_total, "#ec4899"),
@@ -255,18 +316,18 @@ for label, val, total, color in [
     </div>
     """, unsafe_allow_html=True)
 
-# Calendar View
+# ── Calendar View ──────────────────────────────────────────────
 st.markdown('<div class="section-header">Calendar View</div>', unsafe_allow_html=True)
 
 cal_mode = st.radio("", ["Travel", "Office Leave"], horizontal=True, label_visibility="collapsed")
 
-cal_start = date(2026, 9, 28)   # Monday — week before trip
-cal_end   = date(2026, 10, 18)  # Sunday — week after trip
+cal_start = date(2026, 9, 28)
+cal_end   = date(2026, 10, 18)
 
-flight_dates = {date(2026, 10, 5), date(2026, 10, 11)}
-osaka_dates  = {date(2026, 10, d) for d in range(5, 11)}  # Oct 5–10 (checkout Oct 11)
-leave_dates   = {date(2026, 10, d) for d in range(5, 10)}   # Mon–Fri office leave
-weekend_dates = {date(2026, 10, d) for d in [3, 4, 10, 11]}  # weekends
+flight_dates  = {date(2026, 10, 5), date(2026, 10, 11)}
+osaka_dates   = {date(2026, 10, d) for d in range(5, 11)}
+leave_dates   = {date(2026, 10, d) for d in range(5, 10)}
+weekend_dates = {date(2026, 10, d) for d in [3, 4, 10, 11]}
 
 cells_html = ""
 cur = cal_start
@@ -331,7 +392,7 @@ else:
 
 headers_html = "".join(
     "<div style='text-align:center;font-size:10px;color:#444;padding:3px 0;'>" + h + "</div>"
-    for h in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    for h in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 )
 
 cal_full = (
@@ -343,61 +404,64 @@ cal_full = (
 )
 components.html(cal_full, height=380)
 
-# Tables
+# ── Editable tables ──────────────────────────────────────────────
 st.markdown('<hr style="border:none;border-top:1px solid #1a1a1a;margin:12px 0;">', unsafe_allow_html=True)
+
 with st.expander("Flights"):
-    notes = [get(r,8) for r in [4,5]]
-    flights_df = pd.DataFrame({
-        "Date":        [get(r,0) for r in [4,5]],
-        "Destination": [get(r,1) for r in [4,5]],
-        "Departure":   [get(r,2) for r in [4,5]],
-        "Arrival":     [get(r,3) for r in [4,5]],
-        "Airline":     [get(r,4) for r in [4,5]],
-        "Flight No.":  [get(r,5) for r in [4,5]],
-        "Dep / Arr":   [get(r,6) for r in [4,5]],
-        "Cost":        [get(r,7) for r in [4,5]],
-        "Lounge":      [lounge_url(n) for n in notes],
-    })
-    st.dataframe(flights_df, hide_index=True, use_container_width=True, column_config={
-        "Lounge": st.column_config.LinkColumn("Lounge", display_text="Available", width="small")
-    })
+    edited = st.data_editor(
+        st.session_state.flights, hide_index=True, use_container_width=True, num_rows="fixed",
+        column_config={
+            "Cost (RM)": st.column_config.NumberColumn("Cost (RM)", format="RM %.0f", min_value=0),
+            "Lounge":    st.column_config.LinkColumn("Lounge", display_text="Available"),
+        }
+    )
+    if not edited.equals(st.session_state.flights):
+        st.session_state.flights = edited
+        st.rerun()
 
 with st.expander("Accommodation"):
-    show({
-        "Date":          [get(r,0) for r in [13,14]],
-        "City":          [get(r,1) for r in [13,14]],
-        "Accommodation": [get(r,2) for r in [13,14]],
-        "Check In":      [get(r,3) for r in [13,14]],
-        "Check Out":     [get(r,4) for r in [13,14]],
-        "Nights":        [get(r,5) for r in [13,14]],
-        "Budget/Night":  [get(r,6) for r in [13,14]],
-        "Total":         [get(r,7) for r in [13,14]],
-    })
+    edited = st.data_editor(
+        st.session_state.accom, hide_index=True, use_container_width=True, num_rows="fixed",
+        column_config={
+            "Total (RM)": st.column_config.NumberColumn("Total (RM)", format="RM %.0f", min_value=0),
+        }
+    )
+    if not edited.equals(st.session_state.accom):
+        st.session_state.accom = edited
+        st.rerun()
 
 with st.expander("Food"):
-    show({
-        "Dates":          [get(r,0) for r in [19,20]],
-        "City":           [get(r,1) for r in [19,20]],
-        "Days":           [get(r,2) for r in [19,20]],
-        "Daily Estimate": [get(r,3) for r in [19,20]],
-        "Total":          [get(r,4) for r in [19,20]],
-    })
+    edited = st.data_editor(
+        st.session_state.food, hide_index=True, use_container_width=True, num_rows="fixed",
+        column_config={
+            "Total (RM)": st.column_config.NumberColumn("Total (RM)", format="RM %.0f", min_value=0),
+        }
+    )
+    if not edited.equals(st.session_state.food):
+        st.session_state.food = edited
+        st.rerun()
 
 with st.expander("Transportation"):
-    show({
-        "Dates":          [get(r,0) for r in [25,26]],
-        "City":           [get(r,1) for r in [25,26]],
-        "Days":           [get(r,2) for r in [25,26]],
-        "Daily Estimate": [get(r,3) for r in [25,26]],
-        "Total":          [get(r,4) for r in [25,26]],
-        "Notes":          [get(r,5) for r in [25,26]],
-    })
+    edited = st.data_editor(
+        st.session_state.transport, hide_index=True, use_container_width=True, num_rows="fixed",
+        column_config={
+            "Total (RM)": st.column_config.NumberColumn("Total (RM)", format="RM %.0f", min_value=0),
+        }
+    )
+    if not edited.equals(st.session_state.transport):
+        st.session_state.transport = edited
+        st.rerun()
 
 with st.expander("Utilities & Others"):
-    show({
-        "Item":           [get(r,1) for r in [32,33,34]],
-        "Cost (Two Pax)": [get(r,2) for r in [32,33,34]],
-    })
+    edited = st.data_editor(
+        st.session_state.utilities, hide_index=True, use_container_width=True, num_rows="fixed",
+        column_config={
+            "Cost (RM)": st.column_config.NumberColumn("Cost (RM)", format="RM %.0f", min_value=0),
+        }
+    )
+    if not edited.equals(st.session_state.utilities):
+        st.session_state.utilities = edited
+        st.rerun()
 
 if auto_refresh:
     time.sleep(3)
