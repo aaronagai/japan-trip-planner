@@ -148,12 +148,12 @@ def load_from_csv():
     })
 
     accom = pd.DataFrame({
-        "Date":          [get(13, 0)],
-        "City":          [get(13, 1)],
-        "Accommodation": [get(13, 2)],
-        "Check In":      [get(13, 3)],
-        "Check Out":     [get(13, 4)],
-        "Total (RM)":    [get_rm(13, 7)],
+        "Date":          [get(r, 0) for r in [13, 14]],
+        "City":          [get(r, 1) for r in [13, 14]],
+        "Accommodation": [get(r, 2) for r in [13, 14]],
+        "Check In":      [get(r, 3) for r in [13, 14]],
+        "Check Out":     [get(r, 4) for r in [13, 14]],
+        "Total (RM)":    [get_rm(r, 7) for r in [13, 14]],
     })
 
     food = pd.DataFrame({
