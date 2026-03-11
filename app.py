@@ -148,7 +148,6 @@ def load_from_csv():
     })
 
     accom = pd.DataFrame({
-        "Date":          [get(r, 0) for r in [13, 14]],
         "City":          [get(r, 1) for r in [13, 14]],
         "Accommodation": [get(r, 2) for r in [13, 14]],
         "Check In":      [get(r, 3) for r in [13, 14]],
