@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japan Trip · Oct 2026</title>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #090909; color: #fff; padding: 24px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #444; margin-bottom: 4px; }
+    .page-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: #555; margin-bottom: 28px; }
+    .section-header { font-size: 13px; font-weight: 600; color: #888; letter-spacing: 0.05em; text-transform: uppercase; margin: 28px 0 12px 0; padding-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+    .sub { font-size: 12px; color: #555; margin-top: 2px; }
+
+    .trip-bar { display: flex; gap: 32px; padding: 14px 20px; background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .trip-bar-item { display: flex; flex-direction: column; }
+
+    .kpi-stack { background: #111; border: 1px solid #1f1f1f; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+    .kpi-item { padding: 16px 24px; }
+    .kpi-item + .kpi-item { border-top: 1px solid #1f1f1f; }
+    .kpi-val { font-size: 18px; font-weight: 700; color: #fff; margin: 2px 0; }
+
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+    .chart-card { background: #111; border: 1px solid #1f1f1f; border-radius: 8px; padding: 12px; overflow: hidden; }
+
+    .progress-wrap { margin: 8px 0; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 4px; }
+    .progress-track { background: #1a1a1a; border-radius: 3px; height: 4px; }
+    .progress-fill { height: 4px; border-radius: 3px; }
+
+    hr { border: none; border-top: 1px solid #1a1a1a; margin: 20px 0; }
+    .expander { border-bottom: 1px solid #1a1a1a; }
+    .expander:last-child { border-bottom: none; }
+    .expander-btn { width: 100%; background: none; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 14px 0; font-family: inherit; font-size: 14px; color: #888; text-align: left; }
+    .expander-btn:hover { color: #aaa; }
+    .expander-arrow { font-size: 10px; transition: transform 0.2s; }
+    .expander-body { display: none; padding-bottom: 16px; overflow-x: auto; }
+    .expander.open .expander-body { display: block; }
+    .expander.open .expander-arrow { transform: rotate(180deg); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead th { text-align: left; padding: 8px 12px; color: #555; font-weight: 500; border-bottom: 1px solid #1a1a1a; white-space: nowrap; }
+    tbody td { padding: 8px 12px; color: #aaa; border-bottom: 1px solid #111; vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    a { color: #ec4899; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    @media (max-width: 680px) {
+      body { padding: 12px; }
+      .charts-row { grid-template-columns: 1fr; }
+      .page-title { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="trip-bar">
+    <div class="trip-bar-item">
+      <div class="label">Trip</div>
+      <div style="color:#fff;font-size:14px;font-weight:600;">Osaka, Japan</div>
+    </div>
+    <div class="trip-bar-item">
+      <div class="label">Duration</div>
+      <div style="color:#fff;font-size:14px;">5 Oct – 11 Oct 2026</div>
+    </div>
+    <div class="trip-bar-item">
+      <div class="label">Pax</div>
+      <div style="color:#fff;font-size:14px;">Andrea &amp; Mummy</div>
+    </div>
+  </div>
+
+  <div class="page-title">Japan Trip Dashboard</div>
+  <div class="page-sub">Osaka · 5 Oct – 11 Oct 2026 · Two Pax</div>
+
+  <div class="kpi-stack">
+    <div class="kpi-item">
+      <div class="label">Grand Total</div>
+      <div class="kpi-val">RM 9,100</div>
+      <div class="sub">All expenses</div>
+    </div>
+    <div class="kpi-item">
+      <div class="label">Flights</div>
+      <div class="kpi-val">RM 5,000</div>
+      <div class="sub">2 segments</div>
+    </div>
+    <div class="kpi-item">
+      <div class="label">Accommodation</div>
+      <div class="kpi-val">RM 2,500</div>
+      <div class="sub">6 nights</div>
+    </div>
+    <div class="kpi-item">
+      <div class="label">Food</div>
+      <div class="kpi-val">RM 1,200</div>
+      <div class="sub">Osaka</div>
+    </div>
+    <div class="kpi-item">
+      <div class="label">Transport</div>
+      <div class="kpi-val">RM 400</div>
+      <div class="sub">Osaka &amp; Kyoto</div>
+    </div>
+    <div class="kpi-item">
+      <div class="label">Utilities</div>
+      <div class="kpi-val">RM 0</div>
+      <div class="sub">TBD</div>
+    </div>
+  </div>
+
+  <div class="section-header">Breakdown</div>
+  <div class="charts-row">
+    <div class="chart-card"><div id="chart-donut"></div></div>
+    <div class="chart-card"><div id="chart-bar"></div></div>
+  </div>
+
+  <div class="section-header">Budget vs Estimate</div>
+  <div id="progress-bars"></div>
+
+  <hr>
+  <div class="expanders">
+
+    <div class="expander">
+      <button class="expander-btn" onclick="this.closest('.expander').classList.toggle('open')">
+        Flights <span class="expander-arrow">▼</span>
+      </button>
+      <div class="expander-body">
+        <table>
+          <thead><tr><th>Date</th><th>Route</th><th>Departure</th><th>Arrival</th><th>Airline</th><th>Flight No.</th><th>Dep / Arr</th><th>Cost</th><th>Lounge</th></tr></thead>
+          <tbody>
+            <tr><td>5 Oct</td><td>KUL → KIX</td><td>Kuala Lumpur Intl. (KUL)</td><td>Osaka Kansai Intl. (KIX)</td><td>Malaysia Airlines</td><td>MH52</td><td>22:25 / 05:55⁺¹</td><td>RM 2,500</td><td><a href="https://www.oneworld.com/airport-lounge-results?location=KUL" target="_blank">Available</a></td></tr>
+            <tr><td>11 Oct</td><td>KIX → KUL</td><td>Osaka Kansai Intl. (KIX)</td><td>Kuala Lumpur Intl. (KUL)</td><td>Malaysia Airlines</td><td>MH53</td><td>09:40 / 15:45</td><td>RM 2,500</td><td><a href="https://www.oneworld.com/airport-lounge-results?location=KIX" target="_blank">Available</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="expander">
+      <button class="expander-btn" onclick="this.closest('.expander').classList.toggle('open')">
+        Accommodation <span class="expander-arrow">▼</span>
+      </button>
+      <div class="expander-body">
+        <table>
+          <thead><tr><th>Date</th><th>City</th><th>Accommodation</th><th>Check In</th><th>Check Out</th><th>Nights</th><th>Budget/Night</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>5 Oct</td><td>Osaka</td><td>TBD</td><td>5 Oct</td><td>11 Oct</td><td>6</td><td>RM 417</td><td>RM 2,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="expander">
+      <button class="expander-btn" onclick="this.closest('.expander').classList.toggle('open')">
+        Food <span class="expander-arrow">▼</span>
+      </button>
+      <div class="expander-body">
+        <table>
+          <thead><tr><th>Dates</th><th>City</th><th>Days</th><th>Daily Estimate</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>5 Oct – 11 Oct</td><td>Osaka</td><td>6</td><td>RM 200</td><td>RM 1,200</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="expander">
+      <button class="expander-btn" onclick="this.closest('.expander').classList.toggle('open')">
+        Transportation <span class="expander-arrow">▼</span>
+      </button>
+      <div class="expander-body">
+        <table>
+          <thead><tr><th>Dates</th><th>City</th><th>Days</th><th>Daily Estimate</th><th>Total</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>5 Oct – 11 Oct</td><td>Osaka</td><td>TBD</td><td>RM 30</td><td>RM 200</td><td>Suica</td></tr>
+            <tr><td>5 Oct – 11 Oct</td><td>Kyoto</td><td>TBD</td><td>RM 30</td><td>RM 200</td><td>Suica</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="expander">
+      <button class="expander-btn" onclick="this.closest('.expander').classList.toggle('open')">
+        Utilities &amp; Others <span class="expander-arrow">▼</span>
+      </button>
+      <div class="expander-body">
+        <table>
+          <thead><tr><th>Item</th><th>Cost (Two Pax)</th></tr></thead>
+          <tbody>
+            <tr><td>TBD</td><td>RM 0</td></tr>
+            <tr><td>TBD</td><td>RM 0</td></tr>
+            <tr><td>TBD</td><td>RM 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DATA = {
+  categories: ['Flights', 'Accommodation', 'Food', 'Transport', 'Utilities'],
+  values:     [5000,       2500,             1200,   400,         0],
+  colors:     ['#ec4899',  '#3b82f6',        '#22c55e', '#f59e0b', '#7c6aff'],
+  grandTotal: 9100,
+  andrea:     3700,
+  mummy:      5400
+};
+
+// Donut chart
+Plotly.newPlot('chart-donut', [{
+  type: 'pie',
+  labels: DATA.categories,
+  values: DATA.values,
+  hole: 0.65,
+  marker: { colors: DATA.colors, line: { color: '#090909', width: 2 } },
+  textinfo: 'none',
+  hovertemplate: '<b>%{label}</b><br>RM %{value:,.0f}<br>%{percent}<extra></extra>'
+}], {
+  paper_bgcolor: '#111111', plot_bgcolor: '#111111',
+  margin: { t: 30, b: 20, l: 20, r: 20 },
+  legend: { font: { color: '#888', size: 12 }, bgcolor: 'rgba(0,0,0,0)' },
+  height: 280,
+  title: { text: 'Expense Distribution', font: { color: '#666', size: 12 }, x: 0.02 },
+  annotations: [{ text: '<b>RM 9,100</b>', x: 0.5, y: 0.5, font: { size: 16, color: 'white' }, showarrow: false }]
+}, { displayModeBar: false, responsive: true });
+
+// Contribution bar
+Plotly.newPlot('chart-bar', [
+  { type: 'bar', name: 'Andrea', y: ['Contribution'], x: [DATA.andrea], orientation: 'h', marker: { color: '#7c6aff' }, width: 0.3 },
+  { type: 'bar', name: 'Mummy',  y: ['Contribution'], x: [DATA.mummy],  orientation: 'h', marker: { color: '#ec4899' }, width: 0.3 }
+], {
+  paper_bgcolor: '#111111', plot_bgcolor: '#111111',
+  margin: { t: 40, b: 20, l: 60, r: 20 },
+  barmode: 'stack',
+  xaxis: { showgrid: true, gridcolor: '#1a1a1a', tickfont: { color: '#555', size: 11 }, linecolor: '#1a1a1a' },
+  yaxis: { showgrid: false, tickfont: { color: '#888', size: 12 }, linecolor: '#1a1a1a' },
+  height: 180,
+  title: { text: 'Contribution Split', font: { color: '#666', size: 12 }, x: 0.02 },
+  legend: { font: { color: '#888', size: 12 }, bgcolor: 'rgba(0,0,0,0)' }
+}, { displayModeBar: false, responsive: true });
+
+// Progress bars
+(function () {
+  const el = document.getElementById('progress-bars');
+  DATA.categories.forEach((cat, i) => {
+    const val = DATA.values[i];
+    const pct = DATA.grandTotal ? Math.round((val / DATA.grandTotal) * 100) : 0;
+    el.innerHTML += `
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>${cat}</span>
+          <span style="color:#fff">RM ${val.toLocaleString()} <span style="color:#444">(${pct}%)</span></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${pct}%;background:${DATA.colors[i]}"></div>
+        </div>
+      </div>`;
+  });
+})();
+</script>
+</body>
+</html>
